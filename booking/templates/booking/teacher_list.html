@@ -1,0 +1,45 @@
+{% extends 'booking/base.html' %}
+{% block title %}Find a Teacher — LessonHub{% endblock %}
+{% block content %}
+<h1 class="h3 mb-4">Find a Teacher</h1>
+
+<form method="get" class="row g-2 mb-4">
+  <div class="col-md-4">
+    <input type="text" name="q" value="{{ query }}" class="form-control" placeholder="Search by name or keyword">
+  </div>
+  <div class="col-md-4">
+    <select name="subject" class="form-select">
+      <option value="">All subjects</option>
+      {% for value, label in subjects %}
+        <option value="{{ value }}" {% if value == selected_subject %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-md-2">
+    <button type="submit" class="btn btn-primary w-100">Search</button>
+  </div>
+</form>
+
+<div class="row g-3">
+  {% for teacher in teachers %}
+    <div class="col-md-4">
+      <div class="card h-100 p-3">
+        <h5>{{ teacher.user.get_full_name|default:teacher.user.username }}</h5>
+        <span class="badge badge-subject mb-2">{{ teacher.get_subject_display }}</span>
+        <p class="text-muted small">{{ teacher.headline }}</p>
+        <p class="mb-1">
+          {% if teacher.average_rating %}
+            ⭐ {{ teacher.average_rating }} ({{ teacher.review_count }} reviews)
+          {% else %}
+            <span class="text-muted">No reviews yet</span>
+          {% endif %}
+        </p>
+        <p class="fw-bold">${{ teacher.hourly_rate }}/hr</p>
+        <a href="{% url 'teacher_detail' teacher.pk %}" class="btn btn-sm btn-outline-primary mt-auto">View profile</a>
+      </div>
+    </div>
+  {% empty %}
+    <p class="text-muted">No teachers match your search.</p>
+  {% endfor %}
+</div>
+{% endblock %}

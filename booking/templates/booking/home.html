@@ -1,0 +1,30 @@
+{% extends 'booking/base.html' %}
+{% block title %}LessonHub — Hire trusted private lesson teachers for your kids{% endblock %}
+{% block content %}
+<div class="p-5 mb-4 bg-white rounded-4 card">
+  <h1 class="display-6 fw-bold">Find the perfect private teacher for your child</h1>
+  <p class="lead text-muted">Browse verified, background-checked teachers for music, sports, tutoring, art and
+    more — then book a lesson in minutes.</p>
+  <a href="{% url 'teacher_list' %}" class="btn btn-primary btn-lg">Browse Teachers</a>
+  {% if not user.is_authenticated %}
+    <a href="{% url 'signup' %}" class="btn btn-outline-secondary btn-lg">Become a Teacher</a>
+  {% endif %}
+</div>
+
+<h2 class="h4 mb-3">Featured teachers</h2>
+<div class="row g-3">
+  {% for teacher in featured %}
+    <div class="col-md-4">
+      <div class="card h-100 p-3">
+        <h5>{{ teacher.user.get_full_name|default:teacher.user.username }}</h5>
+        <span class="badge badge-subject mb-2">{{ teacher.get_subject_display }}</span>
+        <p class="text-muted small">{{ teacher.headline }}</p>
+        <p class="fw-bold">${{ teacher.hourly_rate }}/hr</p>
+        <a href="{% url 'teacher_detail' teacher.pk %}" class="btn btn-sm btn-outline-primary mt-auto">View profile</a>
+      </div>
+    </div>
+  {% empty %}
+    <p class="text-muted">No verified teachers yet — check back soon!</p>
+  {% endfor %}
+</div>
+{% endblock %}

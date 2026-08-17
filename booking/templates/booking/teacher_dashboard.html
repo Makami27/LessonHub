@@ -1,0 +1,54 @@
+{% extends 'booking/base.html' %}
+{% block title %}My Dashboard — LessonHub{% endblock %}
+{% block content %}
+<h1 class="h3 mb-4">Welcome back, {{ user.first_name|default:user.username }}</h1>
+
+{% if not profile %}
+  <div class="alert alert-warning">You haven't set up your teacher profile yet.
+    <a href="{% url 'teacher_profile_edit' %}">Create it now</a> so parents can find and hire you.</div>
+{% else %}
+  <div class="card p-4 mb-4">
+    <div class="d-flex justify-content-between">
+      <div>
+        <h2 class="h5">{{ profile.headline }}</h2>
+        <span class="badge badge-subject">{{ profile.get_subject_display }}</span>
+        {% if profile.is_verified %}
+          <span class="badge bg-success">Verified</span>
+        {% else %}
+          <span class="badge bg-warning text-dark">Pending verification</span>
+        {% endif %}
+      </div>
+      <div>
+        <a href="{% url 'teacher_profile_edit' %}" class="btn btn-sm btn-outline-secondary">Edit Profile</a>
+        <a href="{% url 'availability_add' %}" class="btn btn-sm btn-outline-primary">+ Add Availability</a>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="h5 mb-3">Booking Requests</h2>
+  <div class="table-responsive">
+  <table class="table bg-white card p-3">
+    <thead><tr><th>Child</th><th>Parent</th><th>Date</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+      {% for booking in bookings %}
+        <tr>
+          <td>{{ booking.child.full_name }} ({{ booking.child.age }})</td>
+          <td>{{ booking.parent.get_full_name|default:booking.parent.username }}</td>
+          <td>{{ booking.lesson_date }}</td>
+          <td><span class="badge bg-secondary">{{ booking.get_status_display }}</span></td>
+          <td>
+            {% if booking.status == 'pending' %}
+              <a href="{% url 'respond_booking' booking.pk %}" class="btn btn-sm btn-primary">Respond</a>
+            {% elif booking.status == 'confirmed' %}
+              <a href="{% url 'respond_booking' booking.pk %}" class="btn btn-sm btn-outline-secondary">Update</a>
+            {% endif %}
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="5" class="text-muted">No booking requests yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  </div>
+{% endif %}
+{% endblock %}
